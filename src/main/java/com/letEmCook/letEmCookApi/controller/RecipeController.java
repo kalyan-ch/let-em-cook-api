@@ -4,28 +4,48 @@ import com.letEmCook.letEmCookApi.model.Recipe;
 import com.letEmCook.letEmCookApi.service.RecipeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/")
+@CrossOrigin(origins = "http://localhost:3000")
 public class RecipeController {
 
     @Autowired
     private RecipeService recipeService;
 
     @GetMapping("recipes")
-    public List<Recipe> getRecipes(@RequestParam(value = "name", required = false) String name){
-        List<Recipe> recipeList = recipeService.getRecipesByName(name);
-        log.info("number of recipes found for search term: {} is : {}", name, recipeList.size());
+    public List<Recipe> getRecipes(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value="ids", required = false) String[] ids) {
+
+        List<Recipe> recipeList = null;
+        if(name == null || name.isEmpty()) {
+            recipeList = recipeService.getRecipesByIds(ids);
+        } else {
+            recipeList = recipeService.getRecipesByName(name);
+        }
+
+        log.info("number of recipes found : {}", (recipeList == null ? 0 : recipeList.size()));
         return recipeList;
     }
+
+    @GetMapping("recipes/{id}")
+    public Recipe getRecipeById(@PathVariable(value="id") String id) {
+
+        Recipe recipe = recipeService.getRecipeById(Integer.parseInt(id));
+        if(recipe == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no recipe with that ID found");
+        }
+
+        log.info("recipe with id: {} found", id);
+        return recipe;
+    }
+
 }
