@@ -1,7 +1,10 @@
 package com.letEmCook.letEmCookApi.service;
 
+import com.letEmCook.letEmCookApi.dao.RecipeIngredientRepository;
 import com.letEmCook.letEmCookApi.dao.RecipeRepository;
+import com.letEmCook.letEmCookApi.model.CompleteRecipe;
 import com.letEmCook.letEmCookApi.model.Recipe;
+import com.letEmCook.letEmCookApi.model.RecipeIngredient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +15,14 @@ import java.util.List;
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
 
     @Autowired
-    public RecipeService(RecipeRepository recipeRepository) {
+    public RecipeService(
+            RecipeRepository recipeRepository,
+            RecipeIngredientRepository recipeIngredientRepository) {
         this.recipeRepository = recipeRepository;
+        this.recipeIngredientRepository = recipeIngredientRepository;
     }
 
     public List<Recipe> getRecipesByName(String name){
@@ -27,7 +34,15 @@ public class RecipeService {
         return recipeRepository.findByIds(intIds);
     }
 
-    public Recipe getRecipeById(int id) {
-        return recipeRepository.findById(id).orElse(null);
+    public CompleteRecipe getCompleteRecipeById(int id) {
+
+
+        Recipe recipe = recipeRepository.findById(id).orElse(null);
+        List<RecipeIngredient> recipeIngredients = recipeIngredientRepository.findByRecipeId(id);
+
+        return CompleteRecipe.builder()
+                .ingredients(recipeIngredients)
+                .recipe(recipe)
+                .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.letEmCook.letEmCookApi.controller;
 
+import com.letEmCook.letEmCookApi.model.CompleteRecipe;
 import com.letEmCook.letEmCookApi.model.Recipe;
 import com.letEmCook.letEmCookApi.service.RecipeService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +38,12 @@ public class RecipeController {
     }
 
     @GetMapping("recipes/{id}")
-    public Recipe getRecipeById(@PathVariable(value="id") String id) {
+    public CompleteRecipe getRecipeById(@PathVariable(value="id") String id) {
 
-        Recipe recipe = recipeService.getRecipeById(Integer.parseInt(id));
+        CompleteRecipe recipe = recipeService.getCompleteRecipeById(Integer.parseInt(id));
         if(recipe == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "no recipe with that ID found");
         }
-
         log.info("recipe with id: {} found", id);
         return recipe;
     }

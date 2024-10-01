@@ -9,16 +9,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-@Table(name = "ingredients")
-public class Ingredient {
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name="recipe_ingredients")
+@Data
+public class RecipeIngredient {
     @Id
     @Column(name="id")
     private int id;
+
+    @Column(name="recipe_id")
+    private int recipeId;
+
     private String name;
+    private Double quantity;
+    private String ingredientType;
+    private String unit;
 }
